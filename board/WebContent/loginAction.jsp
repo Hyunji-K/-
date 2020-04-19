@@ -14,9 +14,24 @@
 </head>
 <body>
 	<%
+		String userID = null;
+	
+		if(session.getAttribute("userID") != null){
+			userID = (String) session.getAttribute("userID");
+		}
+		
+		if(userID != null){
+			PrintWriter script = response.getWriter();
+			script.println("<script>");
+			script.println("alert('이미 로그인 되어있습니다.')");
+			script.println("location.href = 'main.jsp'");
+			script.println("</script>");
+		}
+		
 		UserDAO userDAO = new UserDAO();
 		int result = userDAO.login(user.getUserID(), user.getUserPassword());
 		if (result == 1) { //1 = 로그인 성공
+			session.setAttribute("userID", user.getUserID()); //세션 부여
 			PrintWriter script = response.getWriter(); //위에서 import한데로 자바스크립트 사용하기 위함
 			script.println("<script>");
 			script.println("location.href = 'main.jsp'");

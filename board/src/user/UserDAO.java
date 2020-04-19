@@ -51,10 +51,9 @@ public class UserDAO {
 		return -2; //데이터베이스 오류
 	}
 	
-	public int join(User user) { //insert는 반드시 0이상의 숫자가 반환 됨.
+	public int join(User user) {
 		
-		String SQL = "INSERT INTO USER VALUSE (?,?,?,?,?)";
-		
+		String SQL = "INSERT INTO USER VALUES (?,?,?,?,?)";
 		try {
 			pstmt = conn.prepareStatement(SQL);
 			pstmt.setString(1, user.getUserID());
@@ -63,10 +62,12 @@ public class UserDAO {
 			pstmt.setString(4, user.getUserGender());
 			pstmt.setString(5, user.getUserEmail());
 			return pstmt.executeUpdate();
-			
+			// 이렇게 INSERT 문장을 실행한 경우 반드시 0이상의 숫자가 반환되기 때문에 -1이 아닌경우 성공적으로 회원가입이
+			// 된것을 알 수 있다.
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
-		return -1; //데이터베이스 오류
+		return -1; // 데이터베이스 오류
+		
 	}
 }
