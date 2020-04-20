@@ -4,16 +4,11 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 
 public class BoardDAO {
 	
 	private Connection conn;
-	
-	public BoardDAO(Connection conn) {
-		this.conn = conn;
-	}
-	
-	private PreparedStatement  pstmt;
 	private ResultSet rs;
 	
 	public BoardDAO() {
@@ -29,23 +24,94 @@ public class BoardDAO {
 		}
 	}
 	
-	public int write(Board board) {
+	public String getDate() { //현재 시간 가져오는 함수
+		String SQL = "SELECT NOW()";
+		try {
+			PreparedStatement pstmt = conn.prepareStatement(SQL);
+			rs = pstmt.executeQuery(); // 실행
+			if(rs.next()) { //결과가 있는 경우
+				return rs.getString(1); //현재의 시간 그대로 반환
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return ""; //데이터베이스 오류
+	}
+	public int write(String boardTitle, String userID, String boardContent) {
 		
 		String SQL = "INSERT INTO BOARD VALUES (?,?,?,?,?,?)";
 		try {
-			pstmt = conn.prepareStatement(SQL);
-			pstmt.setInt(1, board.getBoardID());
-			pstmt.setString(2, board.getBoardTitle()); 
-			pstmt.setString(3, board.getUserID());
-			pstmt.setString(4, board.getBoardDate());
-			pstmt.setString(5, board.getBoardContent());
-			pstmt.setInt(6, board.getBoardAvailable());
+			PreparedStatement pstmt = conn.prepareStatement(SQL);
+			pstmt.setInt(1, getNext());
+			pstmt.setString(2, boardTitle); 
+			pstmt.setString(3, userID);
+			pstmt.setString(4, getDate());
+			pstmt.setString(5, boardContent);
+			pstmt.setInt(6, 1);
+			
 			return pstmt.executeUpdate();
 			
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
-		return -1; // 데이터베이스 오류
+		return -1; // 데이터베이스 오류	
+	}
+
+	public int getNext() { //게시글 번호 입력 함수
 		
+		String SQL = "SELECT boardID FROM BOARD ORDER BY boardID DESC"; //제일 마지막 숫자 가져오기
+		try {
+			PreparedStatement pstmt = conn.prepareStatement(SQL);
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				return rs.getInt(1) + 1;
+			}
+			return 1; //첫번째 게시물인 경우 1반환
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return -1; //데이터베이스 오류
+	}
+	
+	public ArrayList<Board> getList(int pageNumber){ //페이징 처리
+		
+		String SQL = "SELECT * FROM BOARD WHERE boardID < ? AND boardAvailable = 1 ORDER BY boardID DESC LIMIT 10";
+		ArrayList<Board> list = new ArrayList<Board>();
+		try {
+			PreparedStatement pstmt =  conn.prepareStatement(SQL);
+			pstmt.setInt(1, getNext() - (pageNumber -1)*10);
+			rs = pstmt.executeQuery();
+			
+			while(rs.next()) {
+				Board board = new Board();
+				board.setBoardID(rs.getInt(1));
+				board.setBoardTitle(rs.getString(2));
+				board.setUserID(rs.getString(3));
+				board.setBoardDate(rs.getString(4));
+				board.setBoardContent(rs.getString(5));
+				board.setBoardAvailable(rs.getInt(6));
+				list.add(board);
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+	
+	public boolean nextPage(int pageNumber) { //10단위로 끊켰을 때 다음 페이지 없다는 처리
+		
+		String SQL = "SELECT * FROM BOARD WHERE boardID < ? AND boardAvailable = 1"; 
+		
+		try {
+			PreparedStatement pstmt =  conn.prepareStatement(SQL);
+			pstmt.setInt(1, getNext() - (pageNumber -1)*10);
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				return true;
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 }
