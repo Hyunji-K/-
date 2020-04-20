@@ -1,22 +1,16 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ page import="java.io.PrintWriter"%>
-<%@ page import="board.BoardDAO" %>
 <%@ page import="board.Board" %>
-<%@ page import="java.util.ArrayList" %>
+<%@ page import="board.BoardDAO" %>
 <!DOCTYPE html>
 <head>
-<meta charset="UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name ="viewport" content =" width=device-width", initial-scale ="1">
 	<!-- viewport =화면상의 표시영역, content =모바일 장치들에 맞게 크기조정, initial =초기화면 배율 설정-->
 <link rel = "stylesheet" href= "css/bootstrap.css">
 	<!-- 스타일시트로 css폴더의 bootstrap.css 사용 -->
 <title>게시판</title>
-<style type="text/css">
-	a, a:hover{
-		color: #000000;
-		}
-</style>
 </head>
 <body>
 	<%
@@ -24,10 +18,18 @@
 		if(session.getAttribute("userID") != null){
 			userID = (String) session.getAttribute("userID");
 		}
-		int pageNumber = 1;
-		if(request.getParameter("pageNumber") != null){ //pageNumber가 매개변수로 넘어왔을 때
-			pageNumber = Integer.parseInt(request.getParameter("pageNumber"));
+		int boardID = 0;
+		if(request.getParameter("boardID") != null){
+			boardID = Integer.parseInt(request.getParameter("boardID"));
 		}
+		if(boardID == 0){
+			PrintWriter script = response.getWriter();
+			script.println("<script>");
+			script.println("alert('유효하지 않은 글입니다.')");
+			script.println("location.href = 'board.jsp'");
+			script.println("</script>");
+		}
+		Board board = new BoardDAO().getboard(boardID);
 	%>
 	<nav class="navbar navbar-inverse">
 	<div class="navbar-header">
@@ -80,47 +82,44 @@
 	</nav>
 	<div class="container">
 		<div class="row">
-			<table class="table table-striped" style="text-align: center; border:1px solid #dddddd">
-				<thead>
-					<tr>
-						<th style="background-color: #eeeeee; text-align: center;">번호</th>
-					    <th style="background-color: #eeeeee; text-align: center;">제목</th>
-					    <th style="background-color: #eeeeee; text-align: center;">작성자</th>
-					    <th style="background-color: #eeeeee; text-align: center;">작성일</th>
-					</tr>
-				</thead>
-				<tbody>
-					<%
-						BoardDAO boardDAO = new BoardDAO();
-						ArrayList<Board> list = boardDAO.getList(pageNumber);
-						for(int i = 0; i < list.size(); i++){
-					%>
-					<tr>
-						<td><%= list.get(i).getBoardID() %></td>
-						<td><a href="view.jsp?boardID=<%= list.get(i).getBoardID() %>">
-						<%= list.get(i).getBoardTitle().replaceAll(" ", "&nbsp;").replaceAll("<", "&lt;")
-								.replaceAll(">", "&gt").replaceAll("\n", "<br>") %></a></td>
-						<td><%= list.get(i).getUserID() %></td>
-						<td><%= list.get(i).getBoardDate().substring(0, 11) + list.get(i).getBoardDate().substring(11, 13) +
-						"시 " + list.get(i).getBoardDate().substring(14, 16) + "분 "%></td>
-					</tr>
-					<%	
-						}
-					%>				
-				</tbody>
-			</table>
-			<%
-				if(pageNumber != 1){
-			%>
-				<a href="board.jsp?pageNumber=<%=pageNumber -1 %>" class="btn btn-success btn-arrow-left">이전</a>	
-			<% 		
-				}if(boardDAO.nextPage(pageNumber + 1)){
-			%>
-				<a href="board.jsp?pageNumber=<%=pageNumber +1 %>" class="btn btn-success btn-arraw-left">다음</a>
-			<%
-				}
-			%>
-			<a href="write.jsp" class="btn btn-primary pull-right">글쓰기</a>
+				<table class="table table-striped" style="text-align: center; border:1px solid #dddddd">
+					<thead>
+						<tr>
+							<th colspan="3" style="background-color: #eeeeee; text-align: center;">글</th>
+	
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td style = "width: 20%;">제목</td> 
+							<td colspan="2"> <%=board.getBoardTitle().replaceAll(" ", "&nbsp;").replaceAll("<", "&lt;")
+									.replaceAll(">", "&gt").replaceAll("\n", "<br>") %></td>
+						</tr>
+						<tr>	
+							<td>작성자</td>
+							<td colspan="2"> <%=board.getUserID() %></td>
+						</tr>
+						<tr>
+							<td>작성일</td>
+							<td colspan="2"> <%=board.getBoardDate().substring(0, 11) + board.getBoardDate().substring(11, 13) +
+									"시 " + board.getBoardDate().substring(14, 16) + "분 "%></td>
+						</tr> 
+						<tr>
+							<td>내용</td>
+							<td colspan="2" style="min-height: 200px; text-align: left;"> <%= board.getBoardContent().replaceAll(" ", "&nbsp;").replaceAll("<", "&lt;")
+							.replaceAll(">", "&gt").replaceAll("\n", "<br>") %></td> <!-- 특수문자 , 공백 처리 -->
+						</tr>
+					</tbody>
+				</table>
+				<a href="board.jsp" class="btn btn-primary">목록</a>
+				<%
+					if(userID != null && userID.equals(board.getUserID())){ //글 작성자라면 수정,삭제 가능
+				%>
+						<a href="update.jsp?boardID=<%= boardID %>" class="btn btn-primary">수정</a>	
+						<a href="deleteAction.jsp?boardID=<%= boardID %>" class="btn btn-primary">삭제</a>	
+				<%
+					}
+				%>
 		</div>
 	</div>
 	<script src= "https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
