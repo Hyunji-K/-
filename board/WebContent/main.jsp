@@ -7,7 +7,7 @@
 <meta name ="viewport" content =" width=device-width", initial-scale ="1">
 	<!-- viewport =화면상의 표시영역, content =모바일 장치들에 맞게 크기조정, initial =초기화면 배율 설정-->
 <link rel = "stylesheet" href= "css/bootstrap.css">
-	<!-- 스타일시트로 css폴더의 bootstrap.css 사용 -->
+<link rel = "stylesheet" href= "css/custom.css">
 <title>게시판</title>
 </head>
 <body>
@@ -66,6 +66,40 @@
 		
 	</div>
 	</nav>
+	<div class="container">
+		<div class="jumbotron">
+			<div class="container">
+				<h1>이 웹 사이트는</h1>
+				<p>부트스트랩을 이용해 간단한 게시판을 만들어 본 JSP 웹 사이트 입니다.</p>
+			</div>
+		</div>
+	</div>
+	<div class="cantainer">
+		<div id="myCarousel" class="carousel slide" data-ride="carousel">
+			<ol class="carousel-indicators">
+				<li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+				<li data-target="#myCarousel" data-slide-to="1"></li>
+				<li data-target="#myCarousel" data-slide-to="2"></li> 
+			</ol>
+			<div class="carousel-inner">
+				<div class="item active">
+					<img src="images/1.jpg">
+				</div>
+				<div class="item">
+					<img src="images/2.jpg">
+				</div>
+				<div class="item">
+					<img src="images/3.jpg">
+				</div>
+			</div>
+			<a class="left carousel-control" href="#myCarousel" data-slide="prev">
+				<span class="glyphicon glyphicon-chevron-left"></span>
+			</a>
+			<a class="right carousel-control" href="#myCarousel" data-slide="next">
+				<span class="glyphicon glyphicon-chevron-right"></span>
+			</a>
+		</div>
+	</div>
 	<script src= "https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
 	<script src= "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </body>

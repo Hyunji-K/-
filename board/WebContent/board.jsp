@@ -10,7 +10,7 @@
 <meta name ="viewport" content =" width=device-width", initial-scale ="1">
 	<!-- viewport =화면상의 표시영역, content =모바일 장치들에 맞게 크기조정, initial =초기화면 배율 설정-->
 <link rel = "stylesheet" href= "css/bootstrap.css">
-	<!-- 스타일시트로 css폴더의 bootstrap.css 사용 -->
+<link rel = "stylesheet" href= "css/custom.css">
 <title>게시판</title>
 <style type="text/css">
 	a, a:hover{

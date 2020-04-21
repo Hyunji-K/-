@@ -116,7 +116,7 @@
 					if(userID != null && userID.equals(board.getUserID())){ //글 작성자라면 수정,삭제 가능
 				%>
 						<a href="update.jsp?boardID=<%= boardID %>" class="btn btn-primary">수정</a>	
-						<a href="deleteAction.jsp?boardID=<%= boardID %>" class="btn btn-primary">삭제</a>	
+						<a onclick ="return confirm('정말로 삭제하시겠습니까?')" href="deleteAction.jsp?boardID=<%= boardID %>" class="btn btn-primary">삭제</a>	
 				<%
 					}
 				%>
